@@ -17,6 +17,8 @@ import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
 import { Event } from './event.entity';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Attendee } from './attendee.entity';
+import { EventsService } from './events.service';
 
 @Controller('/events')
 export class EventsController {
@@ -24,6 +26,9 @@ export class EventsController {
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
+    @InjectRepository(Attendee)
+    private readonly attendeeRepository: Repository<Attendee>,
+    private readonly EventsService: EventsService,
   ) {}
 
   @Get()
@@ -54,17 +59,19 @@ export class EventsController {
     });
   }
 
+  @Get('/practice2')
+  async practice2() {
+    return 2;
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const event = await this.repository.findOne({
-      where: {
-        id,
-      },
-    });
+    const event = await this.EventsService.getEvent(id);
 
     if (!event) {
       throw new NotFoundException();
     }
+    return event;
   }
 
   // You can also use the @UsePipes decorator to enable pipes.
