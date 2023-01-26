@@ -7,6 +7,7 @@ import typeOrmConfig from './config/typeOrm.Config';
 import typeOrmConfigProd from './config/typeOrm.Config.prod';
 
 import { EventsModule } from './events/events.module';
+import { AuthModule } from './auth/auth.model';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { EventsModule } from './events/events.module';
           ? typeOrmConfig
           : typeOrmConfigProd,
     }),
+    AuthModule,
     EventsModule,
   ],
   controllers: [AppController],

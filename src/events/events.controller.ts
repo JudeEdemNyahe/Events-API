@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -23,6 +24,9 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { Attendee } from './attendee.entity';
 import { EventsService } from './events.service';
 import { ListEvents } from './input/list.events';
+import { User } from 'src/auth/user.entity';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import { AuthGuardJwt } from './../auth/auth-guard.jwt';
 
 @Controller('/events')
 export class EventsController {
@@ -89,17 +93,23 @@ export class EventsController {
   // It can be done per method, or for every method when you
   // add it at the controller level.
   @Post()
-  async create(@Body() input: CreateEventDto) {
-    return await this.repository.save({
-      ...input,
-      when: new Date(input.when),
-    });
+  @UseGuards(AuthGuardJwt)
+  async create(
+    @Body() input: CreateEventDto,
+
+    @CurrentUser() user: User,
+  ) {
+    return await this.eventsService.createEvent(input, user);
   }
 
   // Create new ValidationPipe to specify validation group inside @Body
   // new ValidationPipe({ groups: ['update'] })
   @Patch(':id')
-  async update(@Param('id') id, @Body() input: UpdateEventDto) {
+  async update(
+    @Param('id') id,
+    @Body() input: UpdateEventDto,
+    @CurrentUser() user: User,
+  ) {
     const event = await this.repository.findOne(id);
     if (!event) {
       throw new NotFoundException();

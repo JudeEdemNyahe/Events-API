@@ -2,10 +2,13 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Attendee } from './attendee.entity';
+import { User } from '../auth/user.entity';
 
 @Entity()
 export class Event extends BaseEntity {
@@ -25,6 +28,11 @@ export class Event extends BaseEntity {
   })
   attendees: Attendee[];
 
+  @ManyToOne(() => User, (user) => user.organized)
+  @JoinColumn({ name: 'organizerId' })
+  organizer: User;
+  @Column({ nullable: true })
+  organizedId: number;
   attendeeCount?: number;
   attendeeRejected?: number;
   attendeeMaybe?: number;
