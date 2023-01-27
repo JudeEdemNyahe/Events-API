@@ -6,7 +6,7 @@ import { ListEvents, WhenEventFilter } from './input/list.events';
 import { paginate, PaginateOptions } from 'src/pagination/paginator';
 import { CreateEventDto } from './input/create-event.dto';
 import { User } from 'src/auth/user.entity';
-import { Event } from './event.entity';
+import { Event, PaginatedEvents } from './event.entity';
 import { UpdateEventDto } from './input/update-event.dto';
 
 @Injectable()
@@ -109,7 +109,7 @@ export class EventsService {
   public async getEventsWithAttendeeCountFilteredPaginated(
     filter: ListEvents,
     paginateOptions: PaginateOptions,
-  ) {
+  ): Promise<PaginatedEvents> {
     return await paginate(
       await this.getEventsWithAttendeeCountFiltered(filter),
       paginateOptions,
@@ -132,7 +132,15 @@ export class EventsService {
       when: new Date(input.when),
     });
   }
-
+  public async getEventsOrganizedByUserIdPaginated(
+    userId: number,
+    paginateOptions: PaginateOptions,
+  ): Promise<PaginatedEvents> {
+    return await paginate<Event>(
+      this.getEventsOrganizedByUserIdQuery(userId),
+      paginateOptions,
+    );
+  }
   public async updateEvent(
     event: Event,
     eventInput: UpdateEventDto,
@@ -141,6 +149,12 @@ export class EventsService {
       ...event,
       ...eventInput,
       when: eventInput.when ? new Date(eventInput.when) : event.when,
+    });
+  }
+
+  private getEventsOrganizedByUserIdQuery(userId: number) {
+    return this.getEventsBaseQuery().where('e.organizerId = :userId', {
+      userId,
     });
   }
 }

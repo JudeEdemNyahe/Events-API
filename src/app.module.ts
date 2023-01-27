@@ -22,6 +22,7 @@ import { AuthModule } from './auth/auth.model';
           ? typeOrmConfig
           : typeOrmConfigProd,
     }),
+    // TypeOrmModule.forFeature([Attendee, AttendeeService]),
     AuthModule,
     EventsModule,
   ],
