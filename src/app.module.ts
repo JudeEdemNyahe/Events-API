@@ -8,6 +8,8 @@ import typeOrmConfigProd from './config/typeOrm.Config.prod';
 
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.model';
+import { AttendeeService } from './events/attendees.service';
+import { Attendee } from './events/attendee.entity';
 
 @Module({
   imports: [
